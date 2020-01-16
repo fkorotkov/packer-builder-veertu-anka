@@ -1,13 +1,15 @@
 package anka
 
 import (
+	"context"
+	"github.com/hashicorp/hcl/v2/hcldec"
 	"log"
 
 	"github.com/hashicorp/packer/common"
 	"github.com/hashicorp/packer/helper/communicator"
+	"github.com/hashicorp/packer/helper/multistep"
 	"github.com/hashicorp/packer/packer"
 	"github.com/veertuinc/packer-builder-veertu-anka/client"
-	"github.com/mitchellh/multistep"
 )
 
 // The unique ID for this builder.
@@ -20,17 +22,19 @@ type Builder struct {
 }
 
 // Prepare processes the build configuration parameters.
-func (b *Builder) Prepare(raws ...interface{}) (params []string, retErr error) {
+func (b *Builder) Prepare(raws ...interface{}) (params []string, warnings []string, retErr error) {
 	c, errs := NewConfig(raws...)
 	if errs != nil {
-		return nil, errs
+		return nil, nil, errs
 	}
 	b.config = c
-	return nil, nil
+	return nil, nil, nil
 }
 
+func (b *Builder) ConfigSpec() hcldec.ObjectSpec { return b.config.FlatMapstructure().HCL2Spec() }
+
 // Run executes an Anka Packer build and returns a packer.Artifact
-func (b *Builder) Run(ui packer.Ui, hook packer.Hook, cache packer.Cache) (packer.Artifact, error) {
+func (b *Builder) Run(ctx context.Context, ui packer.Ui, hook packer.Hook) (packer.Artifact, error) {
 	client := &client.Client{}
 
 	version, err := client.Version()
@@ -62,7 +66,7 @@ func (b *Builder) Run(ui packer.Ui, hook packer.Hook, cache packer.Cache) (packe
 
 	// Run!
 	b.runner = common.NewRunner(steps, b.config.PackerConfig, ui)
-	b.runner.Run(state)
+	b.runner.Run(ctx, state)
 
 	// If there was an error, return that
 	if rawErr, ok := state.GetOk("error"); ok {
@@ -85,12 +89,4 @@ func (b *Builder) Run(ui packer.Ui, hook packer.Hook, cache packer.Cache) (packe
 		vmId:   descr.UUID,
 		vmName: descr.Name,
 	}, nil
-}
-
-// Cancel.
-func (b *Builder) Cancel() {
-	if b.runner != nil {
-		log.Println("Cancelling the step runner...")
-		b.runner.Cancel()
-	}
 }

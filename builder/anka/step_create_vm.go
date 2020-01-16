@@ -1,14 +1,15 @@
 package anka
 
 import (
+	"context"
 	"fmt"
+	"github.com/hashicorp/packer/helper/multistep"
+	"github.com/hashicorp/packer/packer"
+	"github.com/veertuinc/packer-builder-veertu-anka/client"
 	"log"
 	"math/rand"
 	"strconv"
 	"time"
-	"github.com/hashicorp/packer/packer"
-	"github.com/veertuinc/packer-builder-veertu-anka/client"
-	"github.com/mitchellh/multistep"
 )
 
 var random *rand.Rand
@@ -22,7 +23,7 @@ type StepCreateVM struct {
 	vmName string
 }
 
-func (s *StepCreateVM) Run(state multistep.StateBag) multistep.StepAction {
+func (s *StepCreateVM) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	config := state.Get("config").(*Config)
 	ui := state.Get("ui").(packer.Ui)
 
@@ -60,7 +61,7 @@ func (s *StepCreateVM) Run(state multistep.StateBag) multistep.StepAction {
 		}
 
 		ui.Say(fmt.Sprintf("Creating a new vm (%s) from installer, this will take a while", sourceVM))
-		
+
 		outputStream := make(chan string)
 		go func() {
 			for msg := range outputStream {

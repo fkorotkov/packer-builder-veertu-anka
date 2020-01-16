@@ -1,12 +1,14 @@
 package anka
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
 
+	"github.com/hashicorp/packer/builder/docker"
+	"github.com/hashicorp/packer/helper/multistep"
 	"github.com/hashicorp/packer/packer"
-	"github.com/mitchellh/multistep"
 )
 
 // StepTempDir creates a temporary directory that we use in order to
@@ -15,7 +17,7 @@ type StepTempDir struct {
 	tempDir string
 }
 
-func (s *StepTempDir) Run(state multistep.StateBag) multistep.StepAction {
+func (s *StepTempDir) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	ui := state.Get("ui").(packer.Ui)
 
 	ui.Say("Creating a temporary directory for sharing data...")
@@ -23,7 +25,7 @@ func (s *StepTempDir) Run(state multistep.StateBag) multistep.StepAction {
 	var err error
 	var tempdir string
 
-	configTmpDir, err := packer.ConfigTmpDir()
+	configTmpDir, err := docker.ConfigTmpDir()
 	if err == nil {
 		tempdir, err = ioutil.TempDir(configTmpDir, "packer-anka")
 	}

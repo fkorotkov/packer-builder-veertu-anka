@@ -1,15 +1,16 @@
 package anka
 
 import (
+	"context"
 	"log"
 
+	"github.com/hashicorp/packer/helper/multistep"
 	"github.com/veertuinc/packer-builder-veertu-anka/client"
-	"github.com/mitchellh/multistep"
 )
 
 type StepConnectAnka struct{}
 
-func (s *StepConnectAnka) Run(state multistep.StateBag) multistep.StepAction {
+func (s *StepConnectAnka) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	config := state.Get("config").(*Config)
 	client := state.Get("client").(*client.Client)
 	tempDir := state.Get("temp_dir").(string)

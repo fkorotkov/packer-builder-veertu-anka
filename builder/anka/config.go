@@ -1,3 +1,4 @@
+//go:generate mapstructure-to-hcl2 -type Config
 package anka
 
 import (
@@ -23,9 +24,9 @@ type Config struct {
 	RAMSize  string `mapstructure:"ram_size"`
 	CPUCount string `mapstructure:"cpu_count"`
 
-	BootDelay string `mapstructure:"boot_delay"`
-	EnableHtt bool   `mapstructure:"enable_htt"`
-	DisableHtt bool  `mapstructure:"disable_htt"`
+	BootDelay  string `mapstructure:"boot_delay"`
+	EnableHtt  bool   `mapstructure:"enable_htt"`
+	DisableHtt bool   `mapstructure:"disable_htt"`
 
 	ctx interpolate.Context
 }

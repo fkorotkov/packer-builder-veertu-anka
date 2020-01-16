@@ -1,18 +1,19 @@
 package anka
 
 import (
-	"time"
+	"context"
 	"fmt"
 	"github.com/hashicorp/packer/packer"
 	"log"
+	"time"
 
+	"github.com/hashicorp/packer/helper/multistep"
 	"github.com/veertuinc/packer-builder-veertu-anka/client"
-	"github.com/mitchellh/multistep"
 )
 
 type StepStartVM struct{}
 
-func (s *StepStartVM) Run(state multistep.StateBag) multistep.StepAction {
+func (s *StepStartVM) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	config := state.Get("config").(*Config)
 	ui := state.Get("ui").(packer.Ui)
 	onError := func(err error) multistep.StepAction {

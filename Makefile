@@ -7,12 +7,12 @@ SOURCES := $(shell find . -name '*.go')
 .PHONY: test packer-test clean clean-images
 
 test:
-	govendor test +l
+	GO111MODULE=on go test +l ./...
 
 build: $(BIN)
 
 $(BIN): $(SOURCES)
-	GOOS=darwin go build -ldflags="$(FLAGS)" -o $(BIN) $(PREFIX)
+	GO111MODULE=on GOOS=darwin go build -ldflags="$(FLAGS)" -o $(BIN) $(PREFIX)
 
 install: $(BIN)
 	mkdir -p ~/.packer.d/plugins/
